@@ -1,4 +1,4 @@
-// Copyright 2024 Nesterov Alexander
+// Copyright 2024 Kabalova Valeria
 #include <algorithm>
 #include <functional>
 #include <random>
@@ -46,9 +46,9 @@ bool kabalova_v_count_symbols_mpi::Task1Seq::pre_processing() {
 
 bool kabalova_v_count_symbols_mpi::Task1Seq::validation() {
   internal_order_test();
-  // Íà âûõîä ïîäàåòñÿ 1 ñòðîêà, íà âûõîäå òîëüêî 1 ÷èñëî - ÷èñëî áóêâåííûõ ñèìâîëîâ â ñòðîêå.
+  // ÐÐ° Ð²Ñ‹Ñ…Ð¾Ð´ Ð¿Ð¾Ð´Ð°ÐµÑ‚ÑÑ 1 ÑÑ‚Ñ€Ð¾ÐºÐ°, Ð½Ð° Ð²Ñ‹Ñ…Ð¾Ð´Ðµ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ 1 Ñ‡Ð¸ÑÐ»Ð¾ - Ñ‡Ð¸ÑÐ»Ð¾ Ð±ÑƒÐºÐ²ÐµÐ½Ð½Ñ‹Ñ… ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð² Ð² ÑÑ‚Ñ€Ð¾ÐºÐµ.
   bool flag1 = (taskData->inputs_count[0] >= 0 && taskData->outputs_count[0] == 1);
-  // Íàì ïðèøåë ìàññèâ char'îâ?
+  // ÐÐ°Ð¼ Ð¿Ñ€Ð¸ÑˆÐµÐ» Ð¼Ð°ÑÑÐ¸Ð² char'Ð¾Ð²?
   bool flag2 = false;
   if (typeid(*taskData->inputs[0]).name() == typeid(uint8_t).name()) {
     flag2 = true;
