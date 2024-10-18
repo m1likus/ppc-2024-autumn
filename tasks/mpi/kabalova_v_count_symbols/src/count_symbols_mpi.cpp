@@ -29,7 +29,7 @@ std::string kabalova_v_count_symbols_mpi::getRandomString() {
 int kabalova_v_count_symbols_mpi::countSymbols(std::string& str) {
   int result = 0;
   for (size_t i = 0; i < str.size(); i++) {
-    if (isalpha(str[i])) {
+    if (isalpha(str[i]) != 0) {
       result++;
     }
   }

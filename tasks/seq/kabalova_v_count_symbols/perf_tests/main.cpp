@@ -8,7 +8,17 @@
 #include "seq/kabalova_v_count_symbols/include/count_symbols.hpp"
 
 TEST(kabalova_v_count_symbols_seq_perf_test, test_pipeline_run) {
-  std::string str = kabalova_v_count_symbols_seq::getRandomString();
+  std::string string = "War and Peace is a literary work by the Russian author Lev Tolstoy. \
+                     Set during the Napoleonic Wars, the work comprises both a fictional \
+                     narrative and chapters in which Tolstoy discusses history and philosophy.\
+                     An early version was published serially beginning in 1865, after which the \
+                     entire book was rewritten and published in 1869. It is regarded, with Anna Karenina,\
+                     as Tolstoy's finest literary achievement, and it remains an internationally praised classic \
+                     of world literature.";
+  std::string str; 
+  for (int i = 0; i < 200; i++) {
+    str += string;
+  }
   // Create data
   std::vector<int> out(1, 0);
 
@@ -42,7 +52,17 @@ TEST(kabalova_v_count_symbols_seq_perf_test, test_pipeline_run) {
 }
 
 TEST(kabalova_v_count_symbols_seq_perf_test, test_task_run) {
-  std::string str = kabalova_v_count_symbols_seq::getRandomString();
+  std::string string = "War and Peace is a literary work by the Russian author Lev Tolstoy. \
+                     Set during the Napoleonic Wars, the work comprises both a fictional \
+                     narrative and chapters in which Tolstoy discusses history and philosophy.\
+                     An early version was published serially beginning in 1865, after which the \
+                     entire book was rewritten and published in 1869. It is regarded, with Anna Karenina,\
+                     as Tolstoy's finest literary achievement, and it remains an internationally praised classic \
+                     of world literature.";
+  std::string str;
+  for (int i = 0; i < 200; i++) {
+    str += string;
+  }
 
   // Create data
   std::vector<int> out(1, 0);
