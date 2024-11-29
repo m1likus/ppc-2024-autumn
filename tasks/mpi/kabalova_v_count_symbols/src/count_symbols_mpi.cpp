@@ -8,8 +8,6 @@
 #include <thread>
 #include <vector>
 
-using namespace std::chrono_literals;
-
 int kabalova_v_count_symbols_mpi::getRandomNumber(int left, int right) {
   std::random_device dev;
   std::mt19937 gen(dev());
