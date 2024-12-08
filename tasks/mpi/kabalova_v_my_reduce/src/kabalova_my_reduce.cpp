@@ -166,8 +166,7 @@ bool kabalova_v_my_reduce::TestMPITaskParallel::pre_processing() {
     for (unsigned i = 0; i < taskData->inputs_count[0]; i++) {
       input_[i] = tmp_ptr[i];
     }
-    input_ = std::vector<int>(taskData->inputs_count[0]);
-    local_input_ = std::vector<int>(taskData->inputs_count[0]);
+    local_input_ = std::vector<int>(taskData->inputs_count[0], 0);
   }
   return true;
 }
@@ -207,7 +206,7 @@ bool kabalova_v_my_reduce::TestMPITaskParallel::run() {
     unsigned int localSize = subvectorSizes[0];
     local_input_.resize(localSize);
 
-    boost::mpi::scatterv(world, input_, subvectorSizes, offsets, local_input_.data(), localSize, 0);
+    boost::mpi::scatterv(world, input_.data(), subvectorSizes, offsets, local_input_.data(), localSize, 0);
   } else {
     if ((unsigned int)world.rank() < remains) {
       subvectorSizes[world.rank()]++;

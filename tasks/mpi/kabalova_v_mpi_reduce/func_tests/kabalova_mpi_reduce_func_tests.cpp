@@ -47,7 +47,7 @@ int land(std::vector<int>& vec) {
 int lor(std::vector<int>& vec) {
   bool result = false;
   for (size_t i = 0; i < vec.size(); i++) {
-    result = result || vec[i];
+    result = result || (bool)vec[i];
   }
   return static_cast<int>(result);
 }
