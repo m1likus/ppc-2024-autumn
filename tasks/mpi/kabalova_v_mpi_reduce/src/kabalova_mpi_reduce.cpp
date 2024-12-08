@@ -20,12 +20,9 @@
 // ^ = MPI_BXOR
 // lxor = MPI_LXOR
 
-bool kabalova_v_mpi_reduce::checkValidOperation(std::string ops) {
-  if (ops == "+" || ops == "*" || ops == "min" || ops == "max" || ops == "&&" || ops == "||" || ops == "&" ||
-      ops == "|" || ops == "^" || ops == "lxor")
-    return true;
-  else
-    return false;
+bool kabalova_v_mpi_reduce::checkValidOperation(const std::string& ops) {
+  return (ops == "+" || ops == "*" || ops == "min" || ops == "max" || ops == "&&" || ops == "||" || ops == "&" ||
+          ops == "|" || ops == "^" || ops == "lxor");
 }
 
 bool kabalova_v_mpi_reduce::TestMPITaskParallel::pre_processing() {
@@ -37,7 +34,8 @@ bool kabalova_v_mpi_reduce::TestMPITaskParallel::pre_processing() {
     for (unsigned i = 0; i < taskData->inputs_count[0]; i++) {
       input_[i] = tmp_ptr[i];
     }
-    // Value for output is already initialized with result{}
+    std::vector<int> input_(taskData->inputs_count[0]);
+    std::vector<int> local_input_(taskData->inputs_count[0]);
   }
   return true;
 }
@@ -106,13 +104,13 @@ bool kabalova_v_mpi_reduce::TestMPITaskParallel::run() {
   } else if (ops == "&&") {  // MPI_LAND
     local_res = 1;
     for (size_t i = 0; i < local_input_.size(); i++) {
-      local_res = local_res && local_input_[i];
+      local_res = static_cast<int>(local_res && local_input_[i]);
     }
     reduce(world, local_res, result, std::logical_and(), 0);
   } else if (ops == "||") {  // MPI_LOR
     local_res = 0;
     for (size_t i = 0; i < local_input_.size(); i++) {
-      local_res = local_res || local_input_[i];
+      local_res = static_cast<int>(local_res || local_input_[i]);
     }
     reduce(world, local_res, result, std::logical_or(), 0);
   } else if (ops == "&") {  // MPI_BAND
@@ -136,7 +134,9 @@ bool kabalova_v_mpi_reduce::TestMPITaskParallel::run() {
   } else if (ops == "lxor") {  // MPI_LXOR
     local_res = 0;
     for (size_t i = 0; i < local_input_.size(); i++) {
-      local_res = !local_res != !local_input_[i];
+      bool res1 = !local_res;
+      bool res2 = !local_input_[i];
+      local_res = static_cast<int>(res1 != res2);
     }
     reduce(world, local_res, result, boost::mpi::logical_xor<int>(), 0);
   } else

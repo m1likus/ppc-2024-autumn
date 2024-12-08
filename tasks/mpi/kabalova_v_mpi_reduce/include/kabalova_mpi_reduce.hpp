@@ -14,7 +14,7 @@
 #include "core/task/include/task.hpp"
 
 namespace kabalova_v_mpi_reduce {
-bool checkValidOperation(std::string operation);
+bool checkValidOperation(const std::string& ops);
 
 class TestMPITaskParallel : public ppc::core::Task {
  public:
@@ -26,7 +26,7 @@ class TestMPITaskParallel : public ppc::core::Task {
   bool post_processing() override;
 
  private:
-  std::vector<int> input_{}, local_input_{};
+  std::vector<int> input_, local_input_;
   int result{};
   boost::mpi::communicator world;
   std::string ops;

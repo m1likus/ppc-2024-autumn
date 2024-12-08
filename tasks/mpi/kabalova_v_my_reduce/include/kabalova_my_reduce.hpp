@@ -17,15 +17,16 @@
 #include "core/task/include/task.hpp"
 
 namespace kabalova_v_my_reduce {
-bool checkValidOperation(std::string operation);
-void myReduce(const boost::mpi::communicator& comm, const int& inValue, int& outValue, std::string operation, int root);
+bool checkValidOperation(const std::string& ops);
+void myReduce(const boost::mpi::communicator& comm, const int& inValue, int& outValue, const std::string& ops,
+              int root);
 void reduceImplementation(const boost::mpi::communicator& comm, const int& inValue, int& outValue,
-                          std::string operation, int root);
-void reduceImplementation(const boost::mpi::communicator& comm, const int& inValue, std::string operation, int root);
-void reduceTree(const boost::mpi::communicator& comm, const int& inValue, int& outValue, std::string operation,
+                          const std::string& ops, int root);
+void reduceImplementation(const boost::mpi::communicator& comm, const int& inValue, const std::string& ops, int root);
+void reduceTree(const boost::mpi::communicator& comm, const int& inValue, int& outValue, const std::string& ops,
                 int root);
-void reduceTree(const boost::mpi::communicator& comm, const int& inValue, std::string operation, int root);
-int op(const int& a, const int& b, std::string operation);
+void reduceTree(const boost::mpi::communicator& comm, const int& inValue, const std::string& ops, int root);
+int op(const int& a, const int& b, const std::string& ops);
 
 class Tree {
  private:
@@ -56,7 +57,7 @@ class TestMPITaskParallel : public ppc::core::Task {
   bool post_processing() override;
 
  private:
-  std::vector<int> input_{}, local_input_{};
+  std::vector<int> input_, local_input_;
   int result{};
   boost::mpi::communicator world;
   std::string ops;

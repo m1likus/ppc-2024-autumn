@@ -42,7 +42,7 @@ int kabalova_v_my_reduce::Tree::levelIndex(int n) const {
   int sum = 0;
   int count = 1;
   // We go from the current layer to the parent up (parent has 0th layer)
-  while (n--) {
+  while ((n--) != 0) {
     sum += count;
     count *= 2;
   }
@@ -59,22 +59,18 @@ int kabalova_v_my_reduce::Tree::parent() const {
 int kabalova_v_my_reduce::Tree::begin() const {
   int n = (rank + size - root) % size;
   int childIndex = levelIndex(level_ + 1) + 2 * (n - levelIndex(level_));
+  int result = (childIndex + root) % size;
 
-  if (childIndex >= size)
-    return root;
-  else
-    return (childIndex + root) % size;
+  if (childIndex >= size) return root;
+  return result;
 }
 
-bool kabalova_v_my_reduce::checkValidOperation(std::string ops) {
-  if (ops == "+" || ops == "*" || ops == "min" || ops == "max" || ops == "&&" || ops == "||" || ops == "&" ||
-      ops == "|" || ops == "^" || ops == "lxor")
-    return true;
-  else
-    return false;
+bool kabalova_v_my_reduce::checkValidOperation(const std::string& ops) {
+  return (ops == "+" || ops == "*" || ops == "min" || ops == "max" || ops == "&&" || ops == "||" || ops == "&" ||
+          ops == "|" || ops == "^" || ops == "lxor");
 }
 
-int kabalova_v_my_reduce::op(const int& a, const int& b, std::string ops) {
+int kabalova_v_my_reduce::op(const int& a, const int& b, const std::string& ops) {
   int tmp = 0;
   if (ops == "+") {
     tmp = a + b;
@@ -87,9 +83,9 @@ int kabalova_v_my_reduce::op(const int& a, const int& b, std::string ops) {
   } else if (ops == "max") {
     tmp = std::max(a, b);
   } else if (ops == "&&") {
-    tmp = a && b;
+    tmp = static_cast<int>(a && b);
   } else if (ops == "||") {
-    tmp = a || b;
+    tmp = static_cast<int>(a || b);
   } else if (ops == "&") {
     tmp = a & b;
   } else if (ops == "|") {
@@ -97,35 +93,37 @@ int kabalova_v_my_reduce::op(const int& a, const int& b, std::string ops) {
   } else if (ops == "^") {
     tmp = a ^ b;
   } else if (ops == "lxor") {
-    tmp = !a != !b;
+    bool res1 = !a;
+    bool res2 = !b;
+    tmp = static_cast<int>(res1 != res2);
   }
   return tmp;
 }
 
 // Main function of reduce. Supports reducing at the root and for the root
 void kabalova_v_my_reduce::myReduce(const boost::mpi::communicator& comm, const int& value, int& outValue,
-                                    std::string operation, int root) {
+                                    const std::string& ops, int root) {
   if (comm.rank() == root)
-    kabalova_v_my_reduce::reduceImplementation(comm, value, outValue, operation, root);
+    kabalova_v_my_reduce::reduceImplementation(comm, value, outValue, ops, root);
   else
-    kabalova_v_my_reduce::reduceImplementation(comm, value, operation, root);
+    kabalova_v_my_reduce::reduceImplementation(comm, value, ops, root);
 }
 
 // Reducing at the root with tree-based algorithm
 void kabalova_v_my_reduce::reduceImplementation(const boost::mpi::communicator& comm, const int& inValue, int& outValue,
-                                                std::string operation, int root) {
-  kabalova_v_my_reduce::reduceTree(comm, inValue, outValue, operation, root);
+                                                const std::string& ops, int root) {
+  kabalova_v_my_reduce::reduceTree(comm, inValue, outValue, ops, root);
 }
 
 // Reducing to the root with tree-based algorithm
 void kabalova_v_my_reduce::reduceImplementation(const boost::mpi::communicator& comm, const int& inValue,
-                                                std::string operation, int root) {
-  kabalova_v_my_reduce::reduceTree(comm, inValue, operation, root);
+                                                const std::string& ops, int root) {
+  kabalova_v_my_reduce::reduceTree(comm, inValue, ops, root);
 }
 
 // Commutative reduction
 void kabalova_v_my_reduce::reduceTree(const boost::mpi::communicator& comm, const int& inValue, int& outValue,
-                                      std::string operation, int root) {
+                                      const std::string& ops, int root) {
   outValue = inValue;
   int size = comm.size();
   int rank = comm.rank();
@@ -143,7 +141,7 @@ void kabalova_v_my_reduce::reduceTree(const boost::mpi::communicator& comm, cons
     boost::mpi::detail::packed_archive_recv(comm, child, 0, iarchive, status);
     int incoming;
     iarchive >> incoming;
-    outValue = op(outValue, incoming, operation);
+    outValue = op(outValue, incoming, ops);
   }
   // For non-roots, send the result to the parent.
   if (tree.parent() != rank) {
@@ -153,10 +151,10 @@ void kabalova_v_my_reduce::reduceTree(const boost::mpi::communicator& comm, cons
   }
 }
 // Commutative reduction from a non-root.
-void kabalova_v_my_reduce::reduceTree(const boost::mpi::communicator& comm, const int& inValue, std::string operation,
+void kabalova_v_my_reduce::reduceTree(const boost::mpi::communicator& comm, const int& inValue, const std::string& ops,
                                       int root) {
   int result = 0;
-  kabalova_v_my_reduce::reduceTree(comm, inValue, result, operation, root);
+  kabalova_v_my_reduce::reduceTree(comm, inValue, result, ops, root);
 }
 
 bool kabalova_v_my_reduce::TestMPITaskParallel::pre_processing() {
@@ -168,7 +166,8 @@ bool kabalova_v_my_reduce::TestMPITaskParallel::pre_processing() {
     for (unsigned i = 0; i < taskData->inputs_count[0]; i++) {
       input_[i] = tmp_ptr[i];
     }
-    // Value for output is already initialized with result{}
+    std::vector<int> input_(taskData->inputs_count[0]);
+    std::vector<int> local_input_(taskData->inputs_count[0]);
   }
   return true;
 }
@@ -241,13 +240,13 @@ bool kabalova_v_my_reduce::TestMPITaskParallel::run() {
   } else if (ops == "&&") {  // MPI_LAND
     local_res = 1;
     for (size_t i = 0; i < local_input_.size(); i++) {
-      local_res = local_res && local_input_[i];
+      local_res = static_cast<int>(local_res && local_input_[i]);
     }
     myReduce(world, local_res, result, "&&", 0);
   } else if (ops == "||") {  // MPI_LOR
     local_res = 0;
     for (size_t i = 0; i < local_input_.size(); i++) {
-      local_res = local_res || local_input_[i];
+      local_res = static_cast<int>(local_res || local_input_[i]);
     }
     myReduce(world, local_res, result, "||", 0);
   } else if (ops == "&") {  // MPI_BAND
@@ -271,7 +270,9 @@ bool kabalova_v_my_reduce::TestMPITaskParallel::run() {
   } else if (ops == "lxor") {  // MPI_LXOR
     local_res = 0;
     for (size_t i = 0; i < local_input_.size(); i++) {
-      local_res = !local_res != !local_input_[i];
+      bool res1 = !local_res;
+      bool res2 = !local_input_[i];
+      local_res = static_cast<int>(res1 != res2);
     }
     myReduce(world, local_res, result, "lxor", 0);
   }

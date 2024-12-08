@@ -37,27 +37,27 @@ int multiply(std::vector<int>& vec) {
 }
 
 int land(std::vector<int>& vec) {
-  bool result = 1;
+  bool result = true;
   for (size_t i = 0; i < vec.size(); i++) {
     result = (bool)result && (bool)vec[i];
   }
-  return result;
+  return static_cast<int>(result);
 }
 
 int lor(std::vector<int>& vec) {
-  bool result = 0;
+  bool result = false;
   for (size_t i = 0; i < vec.size(); i++) {
-    result = (bool)result || (bool)vec[i];
+    result = result || (bool)vec[i];
   }
-  return result;
+  return static_cast<int>(result);
 }
 
 int lxor(std::vector<int>& vec) {
-  bool result = 0;
+  bool result = false;
   for (size_t i = 0; i < vec.size(); i++) {
     result = !result != (bool)!vec[i];
   }
-  return result;
+  return static_cast<int>(result);
 }
 
 int band(std::vector<int>& vec) {
