@@ -3,86 +3,86 @@
 
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/environment.hpp>
-#include <vector>
 #include <random>
+#include <vector>
 
 #include "mpi/kabalova_v_mpi_reduce/include/kabalova_mpi_reduce.hpp"
 
 namespace kabalova_v_mpi_reduce {
-  std::vector<int> generateRandomVector(size_t size, int left, int right) { 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution distrib(left, right);
-    std::vector result(size, 0);
-    for (size_t i = 0; i < size; i++) {
-      result[i] = distrib(gen);
-    }
-    return result;
+std::vector<int> generateRandomVector(size_t size, int left, int right) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution distrib(left, right);
+  std::vector result(size, 0);
+  for (size_t i = 0; i < size; i++) {
+    result[i] = distrib(gen);
   }
-
-  int plus(std::vector<int>& vec) { 
-    int result = 0;
-    for (size_t i = 0; i < vec.size(); i++) {
-      result += vec[i];
-    }
-    return result;
-  }
-
-  int multiply(std::vector<int>& vec) {
-    int result = 1;
-    for (size_t i = 0; i < vec.size(); i++) {
-      result *= vec[i];
-    }
-    return result;
-  }
-
-  int land(std::vector<int>& vec) {
-    bool result = 1;
-    for (size_t i = 0; i < vec.size(); i++) {
-      result = (bool)result && (bool)vec[i];
-    }
-    return result;
-  }
-
-  int lor(std::vector<int>& vec) {
-    bool result = 0;
-    for (size_t i = 0; i < vec.size(); i++) {
-      result = (bool)result || (bool)vec[i];
-    }
-    return result;
-  }
-
-  int lxor(std::vector<int>& vec) {
-    bool result = 0;
-    for (size_t i = 0; i < vec.size(); i++) {
-      result = !result != (bool)!vec[i];
-    }
-    return result;
-  }
-
-  int band(std::vector<int>& vec) {
-    int result = 1;
-    for (size_t i = 0; i < vec.size(); i++) {
-      result = result & vec[i];
-    }
-    return result;
-  }
-
-  int bor(std::vector<int>& vec) {
-    int result = 0;
-    for (size_t i = 0; i < vec.size(); i++) {
-      result = result | vec[i];
-    }
-    return result;
-  }
-  int bxor(std::vector<int>& vec) {
-    int result = 0;
-    for (size_t i = 0; i < vec.size(); i++) {
-      result = result ^ vec[i];
-    }
-    return result;
-  }
+  return result;
 }
+
+int plus(std::vector<int>& vec) {
+  int result = 0;
+  for (size_t i = 0; i < vec.size(); i++) {
+    result += vec[i];
+  }
+  return result;
+}
+
+int multiply(std::vector<int>& vec) {
+  int result = 1;
+  for (size_t i = 0; i < vec.size(); i++) {
+    result *= vec[i];
+  }
+  return result;
+}
+
+int land(std::vector<int>& vec) {
+  bool result = 1;
+  for (size_t i = 0; i < vec.size(); i++) {
+    result = (bool)result && (bool)vec[i];
+  }
+  return result;
+}
+
+int lor(std::vector<int>& vec) {
+  bool result = 0;
+  for (size_t i = 0; i < vec.size(); i++) {
+    result = (bool)result || (bool)vec[i];
+  }
+  return result;
+}
+
+int lxor(std::vector<int>& vec) {
+  bool result = 0;
+  for (size_t i = 0; i < vec.size(); i++) {
+    result = !result != (bool)!vec[i];
+  }
+  return result;
+}
+
+int band(std::vector<int>& vec) {
+  int result = 1;
+  for (size_t i = 0; i < vec.size(); i++) {
+    result = result & vec[i];
+  }
+  return result;
+}
+
+int bor(std::vector<int>& vec) {
+  int result = 0;
+  for (size_t i = 0; i < vec.size(); i++) {
+    result = result | vec[i];
+  }
+  return result;
+}
+int bxor(std::vector<int>& vec) {
+  int result = 0;
+  for (size_t i = 0; i < vec.size(); i++) {
+    result = result ^ vec[i];
+  }
+  return result;
+}
+}  // namespace kabalova_v_mpi_reduce
 
 TEST(kabalova_v_mpi_reduce, emptyVector) {
   boost::mpi::communicator world;
@@ -400,7 +400,7 @@ TEST(kabalova_v_mpi_reduce, randomVecBxor) {
     taskDataMpi->outputs.emplace_back(reinterpret_cast<uint8_t*>(global_out.data()));
     taskDataMpi->outputs_count.emplace_back(global_out.size());
   }
-  // Create Task 
+  // Create Task
   kabalova_v_mpi_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "^");
   ASSERT_EQ(testMpiTaskParallel.validation(), true);
   testMpiTaskParallel.pre_processing();

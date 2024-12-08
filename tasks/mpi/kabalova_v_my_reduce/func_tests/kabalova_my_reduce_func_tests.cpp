@@ -187,7 +187,6 @@ TEST(kabalova_v_my_reduce, randomVecProd) {
   }
 }
 
-
 TEST(kabalova_v_my_reduce, randomVecMax) {
   boost::mpi::communicator world;
   size_t vecSize = 100;

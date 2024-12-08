@@ -7,7 +7,6 @@
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/operations.hpp>
-#include <boost/mpi/collectives/reduce.hpp>
 #include <boost/mpi/packed_iarchive.hpp>
 #include <memory>
 #include <numeric>
@@ -20,10 +19,12 @@
 namespace kabalova_v_my_reduce {
 bool checkValidOperation(std::string operation);
 void myReduce(const boost::mpi::communicator& comm, const int& inValue, int& outValue, std::string operation, int root);
-void reduceImplementation(const boost::mpi::communicator& comm, const int& inValue, int& outValue, std::string operation, int root);
+void reduceImplementation(const boost::mpi::communicator& comm, const int& inValue, int& outValue,
+                          std::string operation, int root);
 void reduceImplementation(const boost::mpi::communicator& comm, const int& inValue, std::string operation, int root);
-void reduceTree(const boost::mpi::communicator &comm, const int& inValue, int& outValue, std::string operation, int root);
-void reduceTree(const boost::mpi::communicator &comm, const int& inValue, std::string operation, int root);
+void reduceTree(const boost::mpi::communicator& comm, const int& inValue, int& outValue, std::string operation,
+                int root);
+void reduceTree(const boost::mpi::communicator& comm, const int& inValue, std::string operation, int root);
 int op(const int& a, const int& b, std::string operation);
 
 class Tree {
@@ -32,13 +33,12 @@ class Tree {
   int size;
   int root;
   int level_;
+
  public:
   Tree(int rank, int size, int root);
 
   // Level in the tree, where the proccess is right now
-  int level() const { 
-    return level_;
-  }
+  int level() const { return level_; }
   // On what layer we sit, nth level of the tree
   int levelIndex(int n) const;
   int parent() const;

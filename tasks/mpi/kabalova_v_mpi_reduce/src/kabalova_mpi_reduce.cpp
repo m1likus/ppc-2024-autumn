@@ -69,7 +69,7 @@ bool kabalova_v_mpi_reduce::TestMPITaskParallel::run() {
   std::vector<int> offsets(world.size(), 0);
   if (world.rank() == 0) {
     for (unsigned int i = 0; i < remains; i++) subvectorSizes[i]++;
-    for (int i = 1; i < world.size(); i++) offsets[i] = offsets[i-1] + subvectorSizes[i-1];
+    for (int i = 1; i < world.size(); i++) offsets[i] = offsets[i - 1] + subvectorSizes[i - 1];
 
     unsigned int localSize = subvectorSizes[0];
     local_input_.resize(localSize);

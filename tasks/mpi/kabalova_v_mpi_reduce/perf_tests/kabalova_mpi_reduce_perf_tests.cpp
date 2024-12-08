@@ -7,7 +7,6 @@
 #include "core/perf/include/perf.hpp"
 #include "mpi/kabalova_v_mpi_reduce/include/kabalova_mpi_reduce.hpp"
 
-
 TEST(kabalova_v_mpi_reduce, test_pipeline_run) {
   boost::mpi::communicator world;
   size_t vecSize = 1000;
@@ -15,7 +14,7 @@ TEST(kabalova_v_mpi_reduce, test_pipeline_run) {
   for (size_t i = 0; i < vecSize; i++) {
     vec[i] = i;
   }
-  
+
   // Create data
   std::vector<int> global_out(1, 0);
 
