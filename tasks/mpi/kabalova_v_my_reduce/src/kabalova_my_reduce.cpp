@@ -31,7 +31,7 @@ kabalova_v_my_reduce::Tree::Tree(int rank, int size, int root) {
   int n = (rank + size - root) % size;
   int sum = 0;
   int count = 1;
-  while (sum <= (rank + size - root) % size) {
+  while (sum <= n) {
     level_++;
     count *= 2;
     sum += count;
@@ -202,7 +202,7 @@ bool kabalova_v_my_reduce::TestMPITaskParallel::run() {
   std::vector<int> offsets(world.size(), 0);
   if (world.rank() == 0) {
     for (unsigned int i = 0; i < remains; i++) subvectorSizes[i]++;
-    for (unsigned int i = 1; i < world.size(); i++) offsets[i] = offsets[i - 1] + subvectorSizes[i - 1];
+    for (unsigned int i = 1; i < (unsigned int)world.size(); i++) offsets[i] = offsets[i - 1] + subvectorSizes[i - 1];
 
     // Local size of root process
     unsigned int localSize = subvectorSizes[0];
