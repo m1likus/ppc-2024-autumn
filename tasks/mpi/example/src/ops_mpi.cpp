@@ -22,8 +22,8 @@ std::vector<int> nesterov_a_test_task_mpi::getRandomVector(int sz) {
 
 bool nesterov_a_test_task_mpi::TestMPITaskSequential::pre_processing() {
   internal_order_test();
-  input_ = std::vector<int>(taskData->inputs_count[0]);
   // Init vectors
+  input_ = std::vector<int>(taskData->inputs_count[0]);
   auto* tmp_ptr = reinterpret_cast<int*>(taskData->inputs[0]);
   for (unsigned i = 0; i < taskData->inputs_count[0]; i++) {
     input_[i] = tmp_ptr[i];
