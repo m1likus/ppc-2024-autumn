@@ -79,8 +79,6 @@ bool kabalova_v_mpi_reduce::TestMPITaskParallel::run() {
     unsigned int localSize = subvectorSizes[world.rank()];
     local_input_.resize(localSize);
 
-    if (local_input_.data() == nullptr) std::cerr <<"hello";
-
     boost::mpi::scatterv(world, local_input_.data(), localSize, 0);
   }
 
