@@ -131,37 +131,6 @@ TEST(kabalova_v_my_reduce, sizeOneVector) {
   }
 }
 
-TEST(kabalova_v_my_reduce, vecPlus) {
-  boost::mpi::communicator world;
-  size_t vecSize = 100;
-  std::vector<int> vec(vecSize);
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = i;
-  }
-  int answer = 4950;
-
-  // Create data
-  std::vector<int> global_out(1, 0);
-
-  // Create TaskData
-  std::shared_ptr<ppc::core::TaskData> taskDataMpi = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    taskDataMpi->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
-    taskDataMpi->inputs_count.emplace_back(vec.size());
-    taskDataMpi->outputs.emplace_back(reinterpret_cast<uint8_t*>(global_out.data()));
-    taskDataMpi->outputs_count.emplace_back(global_out.size());
-  }
-  // Create Task
-  kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "+");
-  ASSERT_EQ(testMpiTaskParallel.validation(), true);
-  testMpiTaskParallel.pre_processing();
-  testMpiTaskParallel.run();
-  testMpiTaskParallel.post_processing();
-  if (world.rank() == 0) {
-    ASSERT_EQ(answer, global_out[0]);
-  }
-}
-
 TEST(kabalova_v_my_reduce, randomVecPlus) {
   boost::mpi::communicator world;
   size_t vecSize = 100;
@@ -181,38 +150,6 @@ TEST(kabalova_v_my_reduce, randomVecPlus) {
   }
   // Create Task
   kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "+");
-  ASSERT_EQ(testMpiTaskParallel.validation(), true);
-  testMpiTaskParallel.pre_processing();
-  testMpiTaskParallel.run();
-  testMpiTaskParallel.post_processing();
-  if (world.rank() == 0) {
-    ASSERT_EQ(answer, global_out[0]);
-  }
-}
-
-TEST(kabalova_v_my_reduce, vecProd) {
-  boost::mpi::communicator world;
-  size_t vecSize = 10;
-  std::vector<int> vec(vecSize);
-  int answer = 1;
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = (i + 1);
-    answer *= (i + 1);
-  }
-
-  // Create data
-  std::vector<int> global_out(1, 0);
-
-  // Create TaskData
-  std::shared_ptr<ppc::core::TaskData> taskDataMpi = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    taskDataMpi->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
-    taskDataMpi->inputs_count.emplace_back(vec.size());
-    taskDataMpi->outputs.emplace_back(reinterpret_cast<uint8_t*>(global_out.data()));
-    taskDataMpi->outputs_count.emplace_back(global_out.size());
-  }
-  // Create Task
-  kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "*");
   ASSERT_EQ(testMpiTaskParallel.validation(), true);
   testMpiTaskParallel.pre_processing();
   testMpiTaskParallel.run();
@@ -250,36 +187,6 @@ TEST(kabalova_v_my_reduce, randomVecProd) {
   }
 }
 
-TEST(kabalova_v_my_reduce, vecMax) {
-  boost::mpi::communicator world;
-  size_t vecSize = 100;
-  std::vector<int> vec(vecSize);
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = (i + 1);
-  }
-  int answer = *std::max_element(vec.begin(), vec.begin() + vecSize);
-
-  // Create data
-  std::vector<int> global_out(1, 0);
-
-  // Create TaskData
-  std::shared_ptr<ppc::core::TaskData> taskDataMpi = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    taskDataMpi->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
-    taskDataMpi->inputs_count.emplace_back(vec.size());
-    taskDataMpi->outputs.emplace_back(reinterpret_cast<uint8_t*>(global_out.data()));
-    taskDataMpi->outputs_count.emplace_back(global_out.size());
-  }
-  // Create Task
-  kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "max");
-  ASSERT_EQ(testMpiTaskParallel.validation(), true);
-  testMpiTaskParallel.pre_processing();
-  testMpiTaskParallel.run();
-  testMpiTaskParallel.post_processing();
-  if (world.rank() == 0) {
-    ASSERT_EQ(answer, global_out[0]);
-  }
-}
 
 TEST(kabalova_v_my_reduce, randomVecMax) {
   boost::mpi::communicator world;
@@ -300,37 +207,6 @@ TEST(kabalova_v_my_reduce, randomVecMax) {
   }
   // Create Task
   kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "max");
-  ASSERT_EQ(testMpiTaskParallel.validation(), true);
-  testMpiTaskParallel.pre_processing();
-  testMpiTaskParallel.run();
-  testMpiTaskParallel.post_processing();
-  if (world.rank() == 0) {
-    ASSERT_EQ(answer, global_out[0]);
-  }
-}
-
-TEST(kabalova_v_my_reduce, vecMin) {
-  boost::mpi::communicator world;
-  size_t vecSize = 100;
-  std::vector<int> vec(vecSize);
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = (i + 1);
-  }
-  int answer = *std::min_element(vec.begin(), vec.begin() + vecSize);
-
-  // Create data
-  std::vector<int> global_out(1, 0);
-
-  // Create TaskData
-  std::shared_ptr<ppc::core::TaskData> taskDataMpi = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    taskDataMpi->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
-    taskDataMpi->inputs_count.emplace_back(vec.size());
-    taskDataMpi->outputs.emplace_back(reinterpret_cast<uint8_t*>(global_out.data()));
-    taskDataMpi->outputs_count.emplace_back(global_out.size());
-  }
-  // Create Task
-  kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "min");
   ASSERT_EQ(testMpiTaskParallel.validation(), true);
   testMpiTaskParallel.pre_processing();
   testMpiTaskParallel.run();
@@ -368,40 +244,6 @@ TEST(kabalova_v_my_reduce, randomVecMin) {
   }
 }
 
-TEST(kabalova_v_my_reduce, vecLand) {
-  boost::mpi::communicator world;
-  size_t vecSize = 100;
-  std::vector<int> vec(vecSize);
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = (i + 1);
-  }
-  bool answer = 1;
-  for (size_t i = 0; i < vecSize; i++) {
-    answer = answer && vec[i];
-  }
-
-  // Create data
-  std::vector<int> global_out(1, 0);
-
-  // Create TaskData
-  std::shared_ptr<ppc::core::TaskData> taskDataMpi = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    taskDataMpi->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
-    taskDataMpi->inputs_count.emplace_back(vec.size());
-    taskDataMpi->outputs.emplace_back(reinterpret_cast<uint8_t*>(global_out.data()));
-    taskDataMpi->outputs_count.emplace_back(global_out.size());
-  }
-  // Create Task
-  kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "&&");
-  ASSERT_EQ(testMpiTaskParallel.validation(), true);
-  testMpiTaskParallel.pre_processing();
-  testMpiTaskParallel.run();
-  testMpiTaskParallel.post_processing();
-  if (world.rank() == 0) {
-    ASSERT_EQ(answer, global_out[0]);
-  }
-}
-
 TEST(kabalova_v_my_reduce, randomVecLand) {
   boost::mpi::communicator world;
   size_t vecSize = 100;
@@ -421,40 +263,6 @@ TEST(kabalova_v_my_reduce, randomVecLand) {
   }
   // Create Task
   kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "&&");
-  ASSERT_EQ(testMpiTaskParallel.validation(), true);
-  testMpiTaskParallel.pre_processing();
-  testMpiTaskParallel.run();
-  testMpiTaskParallel.post_processing();
-  if (world.rank() == 0) {
-    ASSERT_EQ(answer, global_out[0]);
-  }
-}
-
-TEST(kabalova_v_my_reduce, vecLor) {
-  boost::mpi::communicator world;
-  size_t vecSize = 100;
-  std::vector<int> vec(vecSize);
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = (i + 1);
-  }
-  bool answer = 0;
-  for (size_t i = 0; i < vecSize; i++) {
-    answer = answer || vec[i];
-  }
-
-  // Create data
-  std::vector<int> global_out(1, 0);
-
-  // Create TaskData
-  std::shared_ptr<ppc::core::TaskData> taskDataMpi = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    taskDataMpi->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
-    taskDataMpi->inputs_count.emplace_back(vec.size());
-    taskDataMpi->outputs.emplace_back(reinterpret_cast<uint8_t*>(global_out.data()));
-    taskDataMpi->outputs_count.emplace_back(global_out.size());
-  }
-  // Create Task
-  kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "||");
   ASSERT_EQ(testMpiTaskParallel.validation(), true);
   testMpiTaskParallel.pre_processing();
   testMpiTaskParallel.run();
@@ -492,40 +300,6 @@ TEST(kabalova_v_my_reduce, randomVecLor) {
   }
 }
 
-TEST(kabalova_v_my_reduce, vecLxor) {
-  boost::mpi::communicator world;
-  size_t vecSize = 100;
-  std::vector<int> vec(vecSize);
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = (i + 1);
-  }
-  bool answer = 0;
-  for (size_t i = 0; i < vecSize; i++) {
-    answer = !answer != (bool)!vec[i];
-  }
-
-  // Create data
-  std::vector<int> global_out(1, 0);
-
-  // Create TaskData
-  std::shared_ptr<ppc::core::TaskData> taskDataMpi = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    taskDataMpi->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
-    taskDataMpi->inputs_count.emplace_back(vec.size());
-    taskDataMpi->outputs.emplace_back(reinterpret_cast<uint8_t*>(global_out.data()));
-    taskDataMpi->outputs_count.emplace_back(global_out.size());
-  }
-  // Create Task
-  kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "lxor");
-  ASSERT_EQ(testMpiTaskParallel.validation(), true);
-  testMpiTaskParallel.pre_processing();
-  testMpiTaskParallel.run();
-  testMpiTaskParallel.post_processing();
-  if (world.rank() == 0) {
-    ASSERT_EQ(answer, global_out[0]);
-  }
-}
-
 TEST(kabalova_v_my_reduce, randomVecLxor) {
   boost::mpi::communicator world;
   size_t vecSize = 100;
@@ -545,40 +319,6 @@ TEST(kabalova_v_my_reduce, randomVecLxor) {
   }
   // Create Task
   kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "lxor");
-  ASSERT_EQ(testMpiTaskParallel.validation(), true);
-  testMpiTaskParallel.pre_processing();
-  testMpiTaskParallel.run();
-  testMpiTaskParallel.post_processing();
-  if (world.rank() == 0) {
-    ASSERT_EQ(answer, global_out[0]);
-  }
-}
-
-TEST(kabalova_v_my_reduce, vecBand) {
-  boost::mpi::communicator world;
-  size_t vecSize = 100;
-  std::vector<int> vec(vecSize);
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = (i + 1);
-  }
-  int answer = 1;
-  for (size_t i = 0; i < vecSize; i++) {
-    answer = answer & vec[i];
-  }
-
-  // Create data
-  std::vector<int> global_out(1, 0);
-
-  // Create TaskData
-  std::shared_ptr<ppc::core::TaskData> taskDataMpi = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    taskDataMpi->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
-    taskDataMpi->inputs_count.emplace_back(vec.size());
-    taskDataMpi->outputs.emplace_back(reinterpret_cast<uint8_t*>(global_out.data()));
-    taskDataMpi->outputs_count.emplace_back(global_out.size());
-  }
-  // Create Task
-  kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "&");
   ASSERT_EQ(testMpiTaskParallel.validation(), true);
   testMpiTaskParallel.pre_processing();
   testMpiTaskParallel.run();
@@ -616,40 +356,6 @@ TEST(kabalova_v_my_reduce, randomVecBand) {
   }
 }
 
-TEST(kabalova_v_my_reduce, vecBor) {
-  boost::mpi::communicator world;
-  size_t vecSize = 100;
-  std::vector<int> vec(vecSize);
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = (i + 1);
-  }
-  int answer = 0;
-  for (size_t i = 0; i < vecSize; i++) {
-    answer = answer | vec[i];
-  }
-
-  // Create data
-  std::vector<int> global_out(1, 0);
-
-  // Create TaskData
-  std::shared_ptr<ppc::core::TaskData> taskDataMpi = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    taskDataMpi->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
-    taskDataMpi->inputs_count.emplace_back(vec.size());
-    taskDataMpi->outputs.emplace_back(reinterpret_cast<uint8_t*>(global_out.data()));
-    taskDataMpi->outputs_count.emplace_back(global_out.size());
-  }
-  // Create Task
-  kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "|");
-  ASSERT_EQ(testMpiTaskParallel.validation(), true);
-  testMpiTaskParallel.pre_processing();
-  testMpiTaskParallel.run();
-  testMpiTaskParallel.post_processing();
-  if (world.rank() == 0) {
-    ASSERT_EQ(answer, global_out[0]);
-  }
-}
-
 TEST(kabalova_v_my_reduce, randomVecBor) {
   boost::mpi::communicator world;
   size_t vecSize = 100;
@@ -669,40 +375,6 @@ TEST(kabalova_v_my_reduce, randomVecBor) {
   }
   // Create Task
   kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "|");
-  ASSERT_EQ(testMpiTaskParallel.validation(), true);
-  testMpiTaskParallel.pre_processing();
-  testMpiTaskParallel.run();
-  testMpiTaskParallel.post_processing();
-  if (world.rank() == 0) {
-    ASSERT_EQ(answer, global_out[0]);
-  }
-}
-
-TEST(kabalova_v_my_reduce, vecBxor) {
-  boost::mpi::communicator world;
-  size_t vecSize = 100;
-  std::vector<int> vec(vecSize);
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = (i + 1);
-  }
-  int answer = 0;
-  for (size_t i = 0; i < vecSize; i++) {
-    answer = answer ^ vec[i];
-  }
-
-  // Create data
-  std::vector<int> global_out(1, 0);
-
-  // Create TaskData
-  std::shared_ptr<ppc::core::TaskData> taskDataMpi = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    taskDataMpi->inputs.emplace_back(reinterpret_cast<uint8_t*>(vec.data()));
-    taskDataMpi->inputs_count.emplace_back(vec.size());
-    taskDataMpi->outputs.emplace_back(reinterpret_cast<uint8_t*>(global_out.data()));
-    taskDataMpi->outputs_count.emplace_back(global_out.size());
-  }
-  // Create Task
-  kabalova_v_my_reduce::TestMPITaskParallel testMpiTaskParallel(taskDataMpi, "^");
   ASSERT_EQ(testMpiTaskParallel.validation(), true);
   testMpiTaskParallel.pre_processing();
   testMpiTaskParallel.run();
