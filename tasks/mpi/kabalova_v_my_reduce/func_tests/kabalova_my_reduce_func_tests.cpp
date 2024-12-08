@@ -55,7 +55,9 @@ int lor(std::vector<int>& vec) {
 int lxor(std::vector<int>& vec) {
   bool result = false;
   for (size_t i = 0; i < vec.size(); i++) {
-    result = !result != (bool)!vec[i];
+    bool res1 = !(bool)vec[i];
+    bool res2 = !result;
+    result = res1 != res2;
   }
   return static_cast<int>(result);
 }

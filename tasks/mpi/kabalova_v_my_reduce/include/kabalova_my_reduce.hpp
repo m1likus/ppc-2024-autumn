@@ -41,7 +41,7 @@ class Tree {
   // Level in the tree, where the proccess is right now
   int level() const { return level_; }
   // On what layer we sit, nth level of the tree
-  int levelIndex(int n) const;
+  static int levelIndex(int n);
   int parent() const;
   // First child of the current process
   int begin() const;
