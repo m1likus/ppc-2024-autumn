@@ -74,10 +74,8 @@ int kabalova_v_my_reduce::op(const int& a, const int& b, const std::string& ops)
   int tmp = 0;
   if (ops == "+") {
     tmp = a + b;
-    if (tmp > std::numeric_limits<int>::max()) throw "overflow";
   } else if (ops == "*") {
     tmp = a * b;
-    if (tmp > std::numeric_limits<int>::max()) throw "overflow";
   } else if (ops == "min") {
     tmp = std::min(a, b);
   } else if (ops == "max") {
