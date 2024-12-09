@@ -1,14 +1,11 @@
 // Copyright 2024 Kabalova Valeria
 #include "mpi/kabalova_v_my_reduce/include/kabalova_my_reduce.hpp"
 
-#include <mpi.h>
-
 #include <algorithm>
 #include <functional>
 #include <random>
 #include <string>
 #include <thread>
-#include <vector>
 
 // List of valid operations:
 // + = MPI_SUM
@@ -66,8 +63,11 @@ int kabalova_v_my_reduce::Tree::begin() const {
 }
 
 bool kabalova_v_my_reduce::checkValidOperation(const std::string& ops) {
-  return (ops == "+" || ops == "*" || ops == "min" || ops == "max" || ops == "&&" || ops == "||" || ops == "&" ||
-          ops == "|" || ops == "^" || ops == "lxor");
+  std::vector<std::string> operations = {"+", "*", "min", "max", "&&", "||", "&", "|", "^", "lxor"};
+  for (auto i : operations) {
+    if (ops == i) return true;
+  }
+  return false;
 }
 
 int kabalova_v_my_reduce::op(const int& a, const int& b, const std::string& ops) {
@@ -83,9 +83,9 @@ int kabalova_v_my_reduce::op(const int& a, const int& b, const std::string& ops)
   } else if (ops == "max") {
     tmp = std::max(a, b);
   } else if (ops == "&&") {
-    tmp = static_cast<int>(bool(a) && (bool)b);
+    tmp = static_cast<int>(static_cast<bool>(a) && static_cast<bool>(b));
   } else if (ops == "||") {
-    tmp = static_cast<int>((bool)a || (bool)b);
+    tmp = static_cast<int>(static_cast<bool>(a) || static_cast<bool>(b));
   } else if (ops == "&") {
     tmp = a & b;
   } else if (ops == "|") {
@@ -93,8 +93,8 @@ int kabalova_v_my_reduce::op(const int& a, const int& b, const std::string& ops)
   } else if (ops == "^") {
     tmp = a ^ b;
   } else if (ops == "lxor") {
-    bool res1 = !(bool)a;
-    bool res2 = !(bool)b;
+    bool res1 = !static_cast<bool>(a);
+    bool res2 = !static_cast<bool>(b);
     tmp = static_cast<int>(res1 != res2);
   }
   return tmp;
@@ -160,12 +160,9 @@ void kabalova_v_my_reduce::reduceTree(const boost::mpi::communicator& comm, cons
 bool kabalova_v_my_reduce::TestMPITaskParallel::pre_processing() {
   internal_order_test();
   if (world.rank() == 0) {
-    // Init value for input
-    input_ = std::vector<int>(taskData->inputs_count[0]);
-    auto* tmp_ptr = reinterpret_cast<int*>(taskData->inputs[0]);
-    for (unsigned i = 0; i < taskData->inputs_count[0]; i++) {
-      input_[i] = tmp_ptr[i];
-    }
+    input_.resize(taskData->inputs_count[0]);
+    auto* inputData = reinterpret_cast<int*>(taskData->inputs[0]);
+    input_.assign(inputData, inputData + taskData->inputs_count[0]);
     local_input_ = std::vector<int>(taskData->inputs_count[0], 0);
   }
   return true;
@@ -200,7 +197,8 @@ bool kabalova_v_my_reduce::TestMPITaskParallel::run() {
   std::vector<int> offsets(world.size(), 0);
   if (world.rank() == 0) {
     for (unsigned int i = 0; i < remains; i++) subvectorSizes[i]++;
-    for (unsigned int i = 1; i < (unsigned int)world.size(); i++) offsets[i] = offsets[i - 1] + subvectorSizes[i - 1];
+    for (unsigned int i = 1; i < static_cast<unsigned int>(world.size()); i++)
+      offsets[i] = offsets[i - 1] + subvectorSizes[i - 1];
 
     // Local size of root process
     unsigned int localSize = subvectorSizes[0];
@@ -208,7 +206,7 @@ bool kabalova_v_my_reduce::TestMPITaskParallel::run() {
 
     boost::mpi::scatterv(world, input_.data(), subvectorSizes, offsets, local_input_.data(), localSize, 0);
   } else {
-    if ((unsigned int)world.rank() < remains) {
+    if (static_cast<unsigned int>(world.rank()) < remains) {
       subvectorSizes[world.rank()]++;
     }
     // Local size for the current process
@@ -227,7 +225,6 @@ bool kabalova_v_my_reduce::TestMPITaskParallel::run() {
     local_res = 1;
     for (size_t i = 0; i < local_input_.size(); i++) {
       local_res *= local_input_[i];
-      if (local_res > std::numeric_limits<int>::max()) throw "overflow";
     }
     myReduce(world, local_res, result, "*", 0);
   } else if (ops == "max") {  // MPI_MAX
@@ -239,13 +236,13 @@ bool kabalova_v_my_reduce::TestMPITaskParallel::run() {
   } else if (ops == "&&") {  // MPI_LAND
     local_res = 1;
     for (size_t i = 0; i < local_input_.size(); i++) {
-      local_res = static_cast<int>((bool)local_res && (bool)local_input_[i]);
+      local_res = static_cast<int>(static_cast<bool>(local_res) && static_cast<bool>(local_input_[i]));
     }
     myReduce(world, local_res, result, "&&", 0);
   } else if (ops == "||") {  // MPI_LOR
     local_res = 0;
     for (size_t i = 0; i < local_input_.size(); i++) {
-      local_res = static_cast<int>((bool)local_res || (bool)local_input_[i]);
+      local_res = static_cast<int>(static_cast<bool>(local_res) || static_cast<bool>(local_input_[i]));
     }
     myReduce(world, local_res, result, "||", 0);
   } else if (ops == "&") {  // MPI_BAND
@@ -269,8 +266,8 @@ bool kabalova_v_my_reduce::TestMPITaskParallel::run() {
   } else if (ops == "lxor") {  // MPI_LXOR
     local_res = 0;
     for (size_t i = 0; i < local_input_.size(); i++) {
-      bool res1 = !(bool)local_res;
-      bool res2 = !(bool)local_input_[i];
+      bool res1 = !static_cast<bool>(local_res);
+      bool res2 = !static_cast<bool>(local_input_[i]);
       local_res = static_cast<int>(res1 != res2);
     }
     myReduce(world, local_res, result, "lxor", 0);

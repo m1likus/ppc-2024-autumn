@@ -4,14 +4,13 @@
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/environment.hpp>
 #include <random>
-#include <vector>
 
 #include "mpi/kabalova_v_my_reduce/include/kabalova_my_reduce.hpp"
 
 namespace kabalova_v_my_reduce {
 std::vector<int> generateRandomVector(size_t size, int left, int right) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
+  int seed = 100;
+  std::mt19937 gen(seed);
   std::uniform_int_distribution distrib(left, right);
   std::vector result(size, 0);
   for (size_t i = 0; i < size; i++) {
@@ -39,7 +38,7 @@ int multiply(std::vector<int>& vec) {
 int land(std::vector<int>& vec) {
   bool result = true;
   for (size_t i = 0; i < vec.size(); i++) {
-    result = result && (bool)vec[i];
+    result = result && static_cast<bool>(vec[i]);
   }
   return static_cast<int>(result);
 }
@@ -47,7 +46,7 @@ int land(std::vector<int>& vec) {
 int lor(std::vector<int>& vec) {
   bool result = false;
   for (size_t i = 0; i < vec.size(); i++) {
-    result = result || (bool)vec[i];
+    result = result || static_cast<bool>(vec[i]);
   }
   return static_cast<int>(result);
 }
@@ -55,7 +54,7 @@ int lor(std::vector<int>& vec) {
 int lxor(std::vector<int>& vec) {
   bool result = false;
   for (size_t i = 0; i < vec.size(); i++) {
-    bool res1 = !(bool)vec[i];
+    bool res1 = !static_cast<bool>(vec[i]);
     bool res2 = !result;
     result = res1 != res2;
   }

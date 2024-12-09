@@ -1,18 +1,16 @@
 // Copyright 2024 Kabalova Valeria
 #pragma once
 
-#include <gtest/gtest.h>
+#include <mpi.h>
 
 #include <boost/mpi/collectives.hpp>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/operations.hpp>
 #include <boost/mpi/packed_iarchive.hpp>
-#include <memory>
 #include <numeric>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "core/task/include/task.hpp"
 

@@ -2,18 +2,24 @@
 #include <gtest/gtest.h>
 
 #include <boost/mpi/timer.hpp>
-#include <vector>
 
 #include "core/perf/include/perf.hpp"
 #include "mpi/kabalova_v_my_reduce/include/kabalova_my_reduce.hpp"
+
+namespace kabalova_v_my_reduce {
+void createVector(std::vector<int>& vec) {
+  vec[0] = 1;
+  for (int i = 1; i < vec.size(); i++) {
+    vec[i] = vec[i - 1] + i;
+  }
+}
+}  // namespace kabalova_v_my_reduce
 
 TEST(kabalova_v_my_reduce, test_pipeline_run) {
   boost::mpi::communicator world;
   size_t vecSize = 1000;
   std::vector<int> vec(vecSize);
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = i;
-  }
+  kabalova_v_my_reduce::createVector(vec);
 
   // Create data
   std::vector<int> global_out(1, 0);
@@ -54,9 +60,7 @@ TEST(kabalova_v_my_reduce, test_task_run) {
   boost::mpi::communicator world;
   size_t vecSize = 1000;
   std::vector<int> vec(vecSize);
-  for (size_t i = 0; i < vecSize; i++) {
-    vec[i] = i;
-  }
+  kabalova_v_my_reduce::createVector(vec);
 
   // Create data
   std::vector<int> global_out(1, 0);
