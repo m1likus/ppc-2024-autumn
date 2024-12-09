@@ -9,7 +9,7 @@
 namespace kabalova_v_mpi_reduce {
 void createVector(std::vector<int>& vec) {
   vec[0] = 1;
-  for (int i = 1; i < vec.size(); i++) {
+  for (size_t i = 1; i < vec.size(); i++) {
     vec[i] = vec[i - 1] + i;
   }
 }

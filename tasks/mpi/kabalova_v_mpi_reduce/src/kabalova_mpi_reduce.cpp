@@ -22,8 +22,8 @@
 
 bool kabalova_v_mpi_reduce::checkValidOperation(const std::string& ops) {
   std::vector<std::string> operations = {"+", "*", "min", "max", "&&", "||", "&", "|", "^", "lxor"};
-  for (auto i : operations) {
-    if (ops == i) return true;
+  for (auto i = operations.begin(); i != operations.end(); ++i) {
+    if (ops == *i) return true;
   }
   return false;
 }
@@ -31,7 +31,7 @@ bool kabalova_v_mpi_reduce::checkValidOperation(const std::string& ops) {
 bool kabalova_v_mpi_reduce::TestMPITaskParallel::pre_processing() {
   internal_order_test();
   if (world.rank() == 0) {
-    input_.resize(taskData->inputs_count[0]);
+    input_ = std::vector<int>(taskData->inputs_count[0]);
     auto* inputData = reinterpret_cast<int*>(taskData->inputs[0]);
     input_.assign(inputData, inputData + taskData->inputs_count[0]);
     local_input_ = std::vector<int>(taskData->inputs_count[0], 0);
