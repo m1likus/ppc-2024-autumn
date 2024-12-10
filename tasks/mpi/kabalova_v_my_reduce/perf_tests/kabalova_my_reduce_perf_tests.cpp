@@ -17,7 +17,7 @@ void createVector(std::vector<int>& vec) {
 
 TEST(kabalova_v_my_reduce, test_pipeline_run) {
   boost::mpi::communicator world;
-  size_t vecSize = 1000;
+  size_t vecSize = 200000;
   std::vector<int> vec(vecSize);
   kabalova_v_my_reduce::createVector(vec);
 
@@ -58,7 +58,7 @@ TEST(kabalova_v_my_reduce, test_pipeline_run) {
 
 TEST(kabalova_v_my_reduce, test_task_run) {
   boost::mpi::communicator world;
-  size_t vecSize = 1000;
+  size_t vecSize = 200000;
   std::vector<int> vec(vecSize);
   kabalova_v_my_reduce::createVector(vec);
 
